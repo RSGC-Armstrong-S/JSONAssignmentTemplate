@@ -11,28 +11,33 @@ class ViewController : UIViewController {
     // If data is successfully retrieved from the server, we can parse it here
     func parseMyJSON(theData : NSData) {
         
-        // Print the provided data
-        print("")
-        print("====== the data provided to parseMyJSON is as follows ======")
-        print(theData)
         
         // De-serializing JSON can throw errors, so should be inside a do-catch structure
         do {
             
             // Do the initial de-serialization
             // Source JSON is here:
-            // http://www.learnswiftonline.com/Samples/subway.json
+            // http://api.icndb.com/jokes/random
             //
             let json = try NSJSONSerialization.JSONObjectWithData(theData, options: NSJSONReadingOptions.AllowFragments) as! AnyObject
             
-            // Print retrieved JSON
-            print("")
-            print("====== the retrieved JSON is as follows ======")
-            print(json)
             
             // Now we can parse this...
             print("")
             print("Now, add your parsing code here...")
+            
+            if let data = json as? [String: AnyObject]{
+                print(data["value"])
+                
+                if let joke = data["value"] as? [String: AnyObject]{
+                    print(joke["joke"])
+                }
+                
+            } else {
+                print("had a problem doing second level parsing")
+            }
+            
+            
             
             // Now we can update the UI
             // (must be done asynchronously)
@@ -69,17 +74,7 @@ class ViewController : UIViewController {
                 
                 // If the request was successful, parse the given data
                 if r.statusCode == 200 {
-        
-                    // Show debug information (if a request was completed successfully)            
-                    print("")
-                    print("====== data from the request follows ======")
-                    print(data)
-                    print("")
-                    print("====== response codes from the request follows ======")
-                    print(response)
-                    print("")
-                    print("====== errors from the request follows ======")
-                    print(error)
+    
             
                     if let d = data {
                         
@@ -95,7 +90,7 @@ class ViewController : UIViewController {
         }
         
         // Define a URL to retrieve a JSON file from
-        let address : String = "http://www.learnswiftonline.com/Samples/subway.json"
+        let address : String = "http://api.icndb.com/jokes/random"
         
         // Try to make a URL request object
         if let url = NSURL(string: address) {
@@ -133,14 +128,14 @@ class ViewController : UIViewController {
         super.viewDidLoad()
 
         // Make the view's background be gray
-        view.backgroundColor = UIColor.lightGrayColor()
+        view.backgroundColor = UIColor.purpleColor()
 
         /*
          * Further define label that will show JSON data
          */
         
         // Set the label text and appearance
-        jsonResult.text = "..."
+        jsonResult.text = "Get a Random Chunk Norris Joke"
         jsonResult.font = UIFont.systemFontOfSize(12)
         jsonResult.numberOfLines = 0   // makes number of lines dynamic
         // e.g.: multiple lines will show up
@@ -161,7 +156,7 @@ class ViewController : UIViewController {
         getData.addTarget(self, action: #selector(ViewController.getMyJSON), forControlEvents: UIControlEvents.TouchUpInside)
         
         // Set the button's title
-        getData.setTitle("Get my JSON!", forState: UIControlState.Normal)
+        getData.setTitle("Get a Random Chunk Norris Joke!", forState: UIControlState.Normal)
         
         // Required to auto layout this button
         getData.translatesAutoresizingMaskIntoConstraints = false
