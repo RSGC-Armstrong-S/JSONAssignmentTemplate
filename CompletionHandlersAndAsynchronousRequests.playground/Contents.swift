@@ -3,6 +3,9 @@
 import UIKit
 import XCPlayground
 
+var type : String = ""
+var typeDictionary = [String]()
+
 class ViewController : UIViewController {
     
     // Views that need to be accessible to all methods
@@ -26,23 +29,24 @@ class ViewController : UIViewController {
             print("")
             print("Now, add your parsing code here...")
             
-            if let data = json as? [String: AnyObject]{
+            if let data = json["value"] as? [String: AnyObject]{
                 print(data["value"])
-                
-                if let joke = data["value"] as? [String: AnyObject]{
-                    print(joke["joke"])
-                }
+                    
+                    guard let type : String = data["joke"] as? String
+                        else{
+                            print("IWOL")
+                            return
+                    }
                 
             } else {
                 print("had a problem doing second level parsing")
             }
             
             
-            
             // Now we can update the UI
             // (must be done asynchronously)
             dispatch_async(dispatch_get_main_queue()) {
-                self.jsonResult.text = "parsed JSON should go here"
+                self.jsonResult.text = type
             }
             
         } catch let error as NSError {
@@ -135,7 +139,7 @@ class ViewController : UIViewController {
          */
         
         // Set the label text and appearance
-        jsonResult.text = "Get a Random Chunk Norris Joke"
+        jsonResult.text = "..."
         jsonResult.font = UIFont.systemFontOfSize(12)
         jsonResult.numberOfLines = 0   // makes number of lines dynamic
         // e.g.: multiple lines will show up
@@ -156,7 +160,7 @@ class ViewController : UIViewController {
         getData.addTarget(self, action: #selector(ViewController.getMyJSON), forControlEvents: UIControlEvents.TouchUpInside)
         
         // Set the button's title
-        getData.setTitle("Get a Random Chunk Norris Joke!", forState: UIControlState.Normal)
+        getData.setTitle("Chunk Norris Fact Generator", forState: UIControlState.Normal)
         
         // Required to auto layout this button
         getData.translatesAutoresizingMaskIntoConstraints = false
@@ -186,8 +190,14 @@ class ViewController : UIViewController {
             metrics: nil,
             views: viewsDictionary)
         
+        let horizontalConstraints = NSLayoutConstraint.constraintsWithVisualFormat(
+            "V:|-50-[getData]-[title]",
+            options: [],
+            metrics: nil,
+            views: viewsDictionary)
+        
         // Add the vertical constraints to the list of constraints
-        allConstraints += verticalConstraints
+        allConstraints += verticalConstraints + horizontalConstraints
         
         // Activate all defined constraints
         NSLayoutConstraint.activateConstraints(allConstraints)
